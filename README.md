@@ -1,50 +1,33 @@
-# dsh-companion
+<p align="center">
+  <strong>陪伴插件 dsh-companion</strong> — 人设、记忆、聊得下去
+</p>
 
-把 DeepSeek Harness 变成你的陪伴 Agent：人格（SOUL）+ 长期记忆（Hermes 风格）+ 技能目录，agent 核心（回合循环、会话、搜索、工具注册）全部由 DSH 提供。
+<p align="center">
+  <a href="./LICENSE"><img src="https://img.shields.io/badge/License-MIT-green?style=flat-square" alt="MIT" /></a>
+  <a href="https://github.com/topics/dsh-plugin"><img src="https://img.shields.io/badge/topic-dsh--plugin-amber?style=flat-square" alt="dsh-plugin" /></a>
+  <img src="https://img.shields.io/badge/Host-DeepSeek%20Harness-informational?style=flat-square" alt="DeepSeek Harness" />
+  <img src="https://img.shields.io/badge/Memory-Hermes%20style-blue?style=flat-square" alt="Hermes memory" />
+  <img src="https://img.shields.io/badge/Data-selfloom%20compatible-lightgrey?style=flat-square" alt="selfloom compatible" />
+</p>
 
-[![License: MIT](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
+---
 
-`dsh-companion` 是 [selfloom](https://github.com/yyh-001/selfloom)（单用户陪伴 agent 内核）的内容层移植：不再自带 agent 循环和会话存储，只保留"陪伴"真正需要的东西——**人设**、**记忆**、**工具**，以 Cordis 插件的形式挂进 DeepSeek Harness。
+聊天 Agent 做陪伴最容易翻车的三件事：
 
-## 陪伴模式是什么
+- 每回合重新自我介绍，像刚上线的客服  
+- 聊过就忘，上次说好的事下次不认账  
+- 人格和记忆各写各的，模型看到的是一锅粥  
 
-DeepSeek Harness 的每个 agent 由 **agent preset** 定义（工具、人设、技能）。`dsh-companion` 配套一个 `companion` preset（"陪伴模式"）：用 DSH 的会话启动一个陪伴型 agent，跟它聊天、让它记住你、随时间积累记忆——核心机制（长对话压缩、会话持久化、工具并行调度）由 DSH 原生提供，本插件只贡献内容层：
+**dsh-companion** 是 DeepSeek Harness 的陪伴插件：人格（SOUL）+ 长期记忆（Hermes 风格）+ 可选 QQ 通道，agent 核心（回合循环、会话持久化、搜索、工具注册）全部由 DSH 提供。  
+数据来自 [selfloom](https://github.com/yyh-001/selfloom)（单用户陪伴 agent 内核）——**记忆文件零迁移**，`SOUL.md` / `USER.md` / `MEMORY.md` 直接复用。
 
-| 贡献 | 说明 |
-|---|---|
-| **人设段** `deployment:persona` | 把 `SOUL.md`（人格）+ `USER.md` / `MEMORY.md`（长期记忆）渲染成单文档，以同名段遮蔽部署默认人设；每次组装实时渲染，记忆写入后立即刷新，另有 60s 定时兜底外部修改 |
-| **`update_memory` 工具** | 长期记忆的增删改查：`add` / `replace` / `remove`（§ 条目级）、`set` / `clear`（整文件）；带字符预算（USER 1375 / MEMORY 2200）与超预算合并引导 |
-| **`companion_status` 工具** | 记忆用量与人设文档状态，自检用 |
-| **QQ 通道**（可选） | `qq.enabled` 时连接 QQ 官方网关：QQ 消息经 `agent.send` 进入陪伴会话，agent 回复经表达层分块回发 QQ（带引用回复）；`qq_status` 工具查在线状态 |
+想配一套表情包？另装 **[dsh-expression](https://github.com/yyh-001/dsh-expression)**（语义检索 + 发图，经本插件的 QQ 通道）——两者独立、可选搭配。
 
-人设段渲染出来的模型上下文长这样（节选）：
+---
 
-```markdown
-# 你是谁
-你叫 suki。跟对方聊天的损友，不是助手，不是客服，不是动漫角色。
-…
+## 安装
 
-# 记忆（仅供参考，用户最新的话优先）
-══════════════════════════════════════════════════
-关于用户 [12% - 165/1375 chars]
-══════════════════════════════════════════════════
-- 喜欢喝茶，不太喝咖啡
-- 周末一般在家写代码
-```
-
-## 特性
-
-- **单文档上下文**：人格 + 记忆 + 用量一屏读完，system prompt 前缀稳定（利于缓存）
-- **数据零迁移**：`SOUL.md` / `USER.md` / `MEMORY.md` 格式与 selfloom（Rust v1 / TS 2.0）完全兼容，现有数据直接使用
-- **记忆预算引导**：接近上限时工具返回当前条目清单，提示合并/清理后同回合重试
-- **技能目录接入**：预设里配置 `customSkillDirs` 指向你的 `SKILL.md` 技能树，模型按需加载
-- **零运行时依赖**：只用 DSH host 服务（`fs` / `tools` / `systemPrompt` / `timer`），peer 依赖 `@deepseek-ai/dsh-tools` / `@deepseek-ai/dsh-llm`；QQ 通道的第三方依赖只有官方 SDK `@tencent-connect/qqbot-nodejs`
-
-## 快速开始
-
-### 1. 安装插件
-
-在 DSH profile 目录（如 `~/.dsh/profiles/web/`）安装：
+在 DSH profile 目录（如 `~/.dsh/profiles/web/`）：
 
 ```bash
 pnpm add file:/path/to/dsh-companion
@@ -52,12 +35,9 @@ pnpm add file:/path/to/dsh-companion
 pnpm add github:yyh-001/dsh-companion
 ```
 
-### 2. 创建陪伴模式预设
+## 配置
 
-在 `~/.dsh/.agent-presets/companion/` 下建 `agent.cordis.yml`。最简单的方式是从 DSH 的 `standard` 预设拷贝一份，然后：
-
-1. **删掉** `persona` 行（`@deepseek-ai/dsh-persona`）——人设由本插件接管，同一作用域不能注册两个同名段；
-2. **加入**本插件行：
+agent preset 里加一行（最简单的做法：从 DSH 的 `standard` 预设拷贝一份，**删掉** `persona` 行——人设由本插件接管，同一作用域不能注册两个同名段）：
 
 ```yaml
 - id: selfloom-companion
@@ -78,56 +58,71 @@ name: 陪伴模式
 description: 陪伴 Agent——人设 + Hermes 长期记忆 + 技能目录，核心由 DeepSeek Harness 提供。
 ```
 
-### 3. 启动会话
+装完新开一个「陪伴模式」会话即可开聊。
 
-在 DSH Web 界面新建会话，选择「陪伴模式」。然后：
+## 装完即用
 
-- 问它「你是谁」——看到的是 `SOUL.md` 里的人格；
-- 说「记住我喜欢喝 XX」——模型会调 `update_memory` 写进 `USER.md`；
-- 过一阵子再聊——记忆还在，跨会话、跨重启。
+```text
+用户: 你是谁
+模型: （读 SOUL.md 的人格 → 以 suki 的身份、损友的语气回应）
 
-### 数据目录
+用户: 记住我喜欢喝 XX
+模型: （调 update_memory 写进 USER.md → 下次会话还记得）
 
-`memoriesDir` 指向包含这三个文件的目录：
-
-| 文件 | 内容 | 预算 |
-|---|---|---|
-| `SOUL.md` | 人格（YAML frontmatter：`revision` / `name` + Markdown 正文） | 24 000 chars |
-| `USER.md` | 关于用户的事实（偏好、边界、称呼） | 1 375 chars |
-| `MEMORY.md` | 环境事实、约定、经验教训 | 2 200 chars |
-
-记忆文件用 `§` 分隔条目，整文件原子写（临时文件 + 替换）。
-
-## 工作原理
-
-- **人设注入**：`PromptSection.text` 是同步求值，所以插件维护一份渲染缓存——`update_memory` 写入后即时刷新，`timer` 每 60s 兜底刷新一次，外部改文件最多延迟一分钟生效；
-- **记忆存储**：通过 DSH 的 `fs` 服务读写（与模型工具同一服务），原子写、预算强制、条目幂等（重复 add 不重写）；
-- **人设遮蔽**：以 `deployment:persona` 为段名注册，与 `dsh-persona` 行同一机制——per-agent 作用域内同名即覆盖部署默认人设。
-
-## 开发
-
-```
-plugin/dsh-companion/
-├── index.js        # 插件本体:人设段 + 记忆工具 + QQ 挂载
-├── qq.js           # QQ 通道模块:官方 SDK 网关 ↔ agent 会话桥接 + 分块投递
-├── package.json    # name / inject / deps
-├── README.md
-└── LICENSE         # MIT
+用户: 发表情包
+模型: （若装了 dsh-expression → 检索图库 → 经 QQ 通道发图）
 ```
 
-挂载验证（组合真实挂载，非静态检查）：
+## 它做什么
 
-```bash
-# 通过 roster 服务（临时探针插件调 agentPresets.standingKeyFor('companion')）
-# 或直接在 DSH Web 新建「陪伴模式」会话，确认 update_memory 出现在工具列表
+| 能力 | 说明 |
+|------|------|
+| **人设段** `deployment:persona` | `SOUL.md`（人格）+ `USER.md` / `MEMORY.md`（长期记忆）渲染成单文档，遮蔽部署默认人设；每次组装实时渲染，写入后立即刷新，另有 60s 定时兜底 |
+| **`update_memory` 工具** | 长期记忆增删改查：`add` / `replace` / `remove`（§ 条目级）、`set` / `clear`（整文件）；字符预算（USER 1375 / MEMORY 2200）+ 超预算合并引导 |
+| **QQ 通道**（可选） | 官方 SDK 网关：QQ 消息经 `agent.send` 进陪伴会话，回复经表达层分块回发（带引用回复）；提供 `companionQq` 服务（`sendImage` / `isOnline`）给其他插件消费 |
+| **`companion_status` / `qq_status`** | 记忆用量、人设文档、QQ 在线状态自检 |
+
+## 日常命令（模型视角）
+
+```text
+update_memory target=user action=add content=「喜欢喝茶」   # 写记忆
+update_memory target=memory action=replace old_text=…       # 合并/更新条目
+companion_status                                            # 看记忆用量
+qq_status                                                   # 看 QQ 网关状态
+```
+
+## 给模型的三条铁律
+
+完整约定见人设段与 `update_memory` 工具描述。
+
+1. 接着关系聊：不自我介绍、不「有什么可以帮你」、不客服腔  
+2. 记忆只存持久事实（偏好/边界/约定），不存任务进度和临时路径；预算快满先合并再写  
+3. 回复按表达层拆气泡：短闲聊一句一条，长文干活保持完整段落
+
+## 接到你的 Agent
+
+| 组件 | 说明 |
+|------|------|
+| **dsh-companion** | 本插件：人设段 + Hermes 记忆 + QQ 通道（`companionQq` 服务） |
+| **[dsh-expression](https://github.com/yyh-001/dsh-expression)** | 表情包插件：语义检索 + 经 `companionQq` 发图 |
+| **selfloom** | 数据源：`SOUL.md` / `USER.md` / `MEMORY.md`（§ 条目 + 预算，零迁移） |
+
+```text
+dsh-companion/
+  index.js        插件本体：人设段 + 记忆工具 + QQ 挂载
+  qq.js           QQ 通道：官方 SDK 网关 ↔ agent 会话桥接 + 分块投递 + companionQq 服务
+  package.json    name / inject / deps
+  README.md
+  LICENSE
 ```
 
 ## 已知限制
 
-- 记忆文件跨会话共享，当前每个会话的 store 实例各自读写同一批文件——单用户场景无问题；若出现真正的跨会话消费者（如其他插件读记忆），再提升为 host 侧服务；
-- QQ 通道是单目标 MVP：所有入站记住最近聊天目标，回复发回该目标；多聊天并发分发是后续增强。扫码登录尚未移植（凭据直接配置即可用）；
-- 表情包发送（meme 库 + 发图）尚未移植。提醒场景可用 DSH 原生 `@deepseek-ai/dsh-schedule` 覆盖。
+- 记忆文件跨会话共享，当前每个会话的 store 实例各自读写同一批文件——单用户场景无问题；
+- QQ 通道是单目标 MVP：回复发回"最近聊天"目标；扫码登录尚未移植（凭据直接配置即可用）；
+- 表情包管理（上传/删除/改元数据）不在此插件——那是 `dsh-expression` 图库维护的事；
+- 提醒场景尚未接入（DSH 原生 `@deepseek-ai/dsh-schedule` 可直接覆盖）。
 
 ## License
 
-[MIT](LICENSE)
+[MIT](./LICENSE)
