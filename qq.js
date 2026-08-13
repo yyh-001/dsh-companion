@@ -159,9 +159,26 @@ export function startQq(ctx, qqConfig) {
     }
   }
 
+  /** 发图到最近聊天目标(dsh-expression 的 send_meme 经 companionQq 服务调用)。 */
+  async function sendImage(path, caption) {
+    if (!bot || !ready) throw new Error('QQ 通道未就绪')
+    if (!lastChatTarget) throw new Error('还没有聊天目标')
+    const options = caption ? { content: caption } : undefined
+    await bot.sendImage(toReplyTarget(lastChatTarget), { localPath: path }, options)
+  }
+
   function isOnline() {
     return ready && !stopped && !!bot
   }
+
+  // companionQq 服务:给其他插件(如 dsh-expression)提供发图/状态能力。
+  const disposeQqService = ctx.provide('companionQq', {
+    isOnline,
+    sendImage,
+    get lastChatTarget() {
+      return lastChatTarget || null
+    },
+  })
 
   // ---- 网关连接(agent 缺失时不连,避免验证挂载空转) ----
   if (agent && appId && clientSecret) {
@@ -203,9 +220,10 @@ export function startQq(ctx, qqConfig) {
     stopped = true
     ready = false
     try { offEvent() } catch { /* ignore */ }
+    try { disposeQqService() } catch { /* ignore */ }
     try { if (bot) bot.stop() } catch { /* ignore */ }
     bot = null
   })
 
-  return { isOnline }
+  return { isOnline, sendImage }
 }
