@@ -12,6 +12,7 @@
  * 用法:agent preset 里加一行 `name: dsh-companion`。
  */
 import { defineTool } from '@deepseek-ai/dsh-tools'
+import { startQq } from './qq.js'
 
 export const name = 'dsh-companion'
 export const inject = ['fs', 'tools', 'systemPrompt', 'timer']
@@ -251,4 +252,9 @@ export function apply(ctx, config) {
       return { memoriesDir, personaChars: cache.length, usage }
     },
   }))
+
+  // ---- QQ 通道(可选:config.qq.enabled) ----
+  if (config?.qq && config.qq.enabled) {
+    startQq(ctx, config.qq)
+  }
 }
