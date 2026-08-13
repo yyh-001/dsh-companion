@@ -132,6 +132,28 @@ dsh-companion/
 - 表情包管理（上传/删除/改元数据）不在此插件——那是 `dsh-expression` 图库维护的事；
 - 提醒场景尚未接入（DSH 原生 `@deepseek-ai/dsh-schedule` 可直接覆盖）。
 
+## Roadmap（后续目标）
+
+**近期——把通道和调度补齐**
+
+- [ ] **QQ 扫码登录**：`webServer` 注册路由 + 手机 QQ 扫码换凭据，替代手填 appId/secret（移植 selfloom `qq_login.ts`）
+- [ ] **多聊天目标**：按 QQ chatId 区分会话/回复目标，替代"最近聊天"单目标 MVP
+- [ ] **提醒接入**：`dsh-schedule` 行进陪伴预设，覆盖 `schedule_follow_up` / `cron_manage` 场景
+- [ ] **完整预设示例**：仓库内 `examples/companion.agent.cordis.yml`（基于 standard 的完整可复制文件）
+
+**中期——记忆与主动性**
+
+- [ ] **记忆摘要压缩**：长对话自动摘要推进（移植 selfloom `ensureSummary`，Hermes compaction 语义）
+- [ ] **记忆服务 host 化**：出现真正的跨会话消费者（如 QQ 通道/其他插件读记忆）时，把 store 提升为 host 侧服务
+- [ ] **主动回合**：心跳/空闲自省（对应 selfloom heartbeat），结合 dsh-schedule 定时开口
+- [ ] **媒体入站**：QQ 图片消息进会话（DSH attachments 服务对接）
+
+**工程化**
+
+- [ ] **测试套件**：记忆条目/预算、分块投递、QQ 消息映射的单元测试
+- [ ] **TypeScript + 构建链**：插件代码量上来后走官方 tsdown 模板，`main` 指向编译产物
+- [ ] **发布形态**：保持 GitHub 分发（`pnpm add github:…`），或按需发布 npm
+
 ## License
 
 [MIT](./LICENSE)
