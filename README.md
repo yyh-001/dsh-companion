@@ -1,4 +1,8 @@
 <p align="center">
+  <img src="docs/banner.jpg" alt="dsh-companion — 人设、记忆、聊得下去" width="100%" />
+</p>
+
+<p align="center">
   <strong>陪伴插件 dsh-companion</strong> — 人设、记忆、聊得下去
 </p>
 
