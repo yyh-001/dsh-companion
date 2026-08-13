@@ -3,12 +3,13 @@
 </p>
 
 <p align="center">
-  <strong>陪伴插件 dsh-companion</strong> — 人设、记忆、聊得下去
+  <strong>DeepSeek 陪伴模式</strong> · dsh-companion — 人设、记忆、聊得下去
 </p>
 
 <p align="center">
   <a href="./LICENSE"><img src="https://img.shields.io/badge/License-MIT-green?style=flat-square" alt="MIT" /></a>
   <a href="https://github.com/topics/dsh-plugin"><img src="https://img.shields.io/badge/topic-dsh--plugin-amber?style=flat-square" alt="dsh-plugin" /></a>
+  <img src="https://img.shields.io/badge/DeepSeek-陪伴模式-ff6a00?style=flat-square" alt="DeepSeek 陪伴模式" />
   <img src="https://img.shields.io/badge/Host-DeepSeek%20Harness-informational?style=flat-square" alt="DeepSeek Harness" />
   <img src="https://img.shields.io/badge/Memory-Hermes%20style-blue?style=flat-square" alt="Hermes memory" />
   <img src="https://img.shields.io/badge/Data-selfloom%20compatible-lightgrey?style=flat-square" alt="selfloom compatible" />
