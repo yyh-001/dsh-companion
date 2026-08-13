@@ -28,6 +28,8 @@
 
 想配一套表情包？另装 **[dsh-expression](https://github.com/yyh-001/dsh-expression)**（语义检索 + 发图，经本插件的 QQ 通道）——两者独立、可选搭配。
 
+交流 / 反馈：**QQ 群 [993579665](https://qm.qq.com/q/7AD2g70HqS)**（[点击加入](https://qm.qq.com/q/7AD2g70HqS)）
+
 ---
 
 ## 安装
