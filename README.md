@@ -15,6 +15,7 @@ DeepSeek Harness 的每个 agent 由 **agent preset** 定义（工具、人设�
 | **人设段** `deployment:persona` | 把 `SOUL.md`（人格）+ `USER.md` / `MEMORY.md`（长期记忆）渲染成单文档，以同名段遮蔽部署默认人设；每次组装实时渲染，记忆写入后立即刷新，另有 60s 定时兜底外部修改 |
 | **`update_memory` 工具** | 长期记忆的增删改查：`add` / `replace` / `remove`（§ 条目级）、`set` / `clear`（整文件）；带字符预算（USER 1375 / MEMORY 2200）与超预算合并引导 |
 | **`companion_status` 工具** | 记忆用量与人设文档状态，自检用 |
+| **QQ 通道**（可选） | `qq.enabled` 时连接 QQ 官方网关：QQ 消息经 `agent.send` 进入陪伴会话，agent 回复经表达层分块回发 QQ（带引用回复）；`qq_status` 工具查在线状态 |
 
 人设段渲染出来的模型上下文长这样（节选）：
 
@@ -37,7 +38,7 @@ DeepSeek Harness 的每个 agent 由 **agent preset** 定义（工具、人设�
 - **数据零迁移**：`SOUL.md` / `USER.md` / `MEMORY.md` 格式与 selfloom（Rust v1 / TS 2.0）完全兼容，现有数据直接使用
 - **记忆预算引导**：接近上限时工具返回当前条目清单，提示合并/清理后同回合重试
 - **技能目录接入**：预设里配置 `customSkillDirs` 指向你的 `SKILL.md` 技能树，模型按需加载
-- **零运行时依赖**：只用 DSH host 服务（`fs` / `tools` / `systemPrompt` / `timer`），peer 依赖 `@deepseek-ai/dsh-tools`
+- **零运行时依赖**：只用 DSH host 服务（`fs` / `tools` / `systemPrompt` / `timer`），peer 依赖 `@deepseek-ai/dsh-tools` / `@deepseek-ai/dsh-llm`；QQ 通道的第三方依赖只有官方 SDK `@tencent-connect/qqbot-nodejs`
 
 ## 快速开始
 
@@ -63,6 +64,11 @@ pnpm add github:yyh-001/dsh-companion
   name: dsh-companion
   config:
     memoriesDir: .selfloom/memories   # 相对路径按会话工作目录解析，也可写绝对路径
+    # 可选:QQ 通道——appId/secret 来自 QQ 开放平台(q.qq.com)机器人凭据
+    qq:
+      enabled: true
+      appId: '1905247119'
+      clientSecret: 'xxxxxxxxxxxxxxxx'
 ```
 
 再补一个 `preset.yml`（显示名）：
@@ -102,8 +108,9 @@ description: 陪伴 Agent——人设 + Hermes 长期记忆 + 技能目录，核
 
 ```
 plugin/dsh-companion/
-├── index.js        # 插件本体（单文件，无构建步骤）
-├── package.json    # name / inject / peer deps
+├── index.js        # 插件本体:人设段 + 记忆工具 + QQ 挂载
+├── qq.js           # QQ 通道模块:官方 SDK 网关 ↔ agent 会话桥接 + 分块投递
+├── package.json    # name / inject / deps
 ├── README.md
 └── LICENSE         # MIT
 ```
@@ -117,8 +124,9 @@ plugin/dsh-companion/
 
 ## 已知限制
 
-- 记忆文件跨会话共享，当前每个会话的 store 实例各自读写同一批文件——单用户场景无问题；若出现真正的跨会话消费者（如 QQ 通道插件读记忆），再提升为 host 侧服务；
-- QQ 通道、表情包发送、`cron.jsonl` 全局调度尚未移植（DSH 侧提醒场景可用 `@deepseek-ai/dsh-schedule` 覆盖）。
+- 记忆文件跨会话共享，当前每个会话的 store 实例各自读写同一批文件——单用户场景无问题；若出现真正的跨会话消费者（如其他插件读记忆），再提升为 host 侧服务；
+- QQ 通道是单目标 MVP：所有入站记住最近聊天目标，回复发回该目标；多聊天并发分发是后续增强。扫码登录尚未移植（凭据直接配置即可用）；
+- 表情包发送（meme 库 + 发图）尚未移植。提醒场景可用 DSH 原生 `@deepseek-ai/dsh-schedule` 覆盖。
 
 ## License
 
