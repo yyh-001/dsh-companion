@@ -1,0 +1,11 @@
+{
+  "name": "dsh-companion",
+  "version": "0.1.0",
+  "description": "selfloom 陪伴内容层作为 DeepSeek Harness 插件:人设段(SOUL + Hermes 记忆文档)+ update_memory / companion_status 工具。核心(agent 循环、会话、搜索、工具注册)由 DSH 提供。",
+  "type": "module",
+  "main": "index.js",
+  "private": true,
+  "peerDependencies": {
+    "@deepseek-ai/dsh-tools": "*"
+  }
+}
