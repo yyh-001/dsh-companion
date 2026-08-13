@@ -63,7 +63,11 @@ name: 陪伴模式
 description: 陪伴 Agent——人设 + Hermes 长期记忆 + 技能目录，核心由 DeepSeek Harness 提供。
 ```
 
-装完新开一个「陪伴模式」会话即可开聊。
+装完后，设置 → 通用设置 → Agent 预设，选 **陪伴模式 · 自定义**，再开新会话即可开聊：
+
+<p align="center">
+  <img src="docs/settings-companion-mode.png" alt="DeepSeek 设置：Agent 预设选「陪伴模式 · 自定义」" width="720" />
+</p>
 
 ## 装完即用
 
